@@ -43,21 +43,22 @@ jobs:
           mkdir tmp
           cd tmp
 
-          docker pull --platform linux/amd64 ghcr.io/${{ github.repository }}:latest || exit 0
-          img=$(docker create --platform linux/amd64 ghcr.io/${{ github.repository }}:latest)
-          docker export $img -o latest.tar
-          docker rm $img
+          if docker pull --platform linux/amd64 ghcr.io/${{ github.repository }}:latest; then
+            img=$(docker create --platform linux/amd64 ghcr.io/${{ github.repository }}:latest)
+            docker export $img -o latest.tar
+            docker rm $img
 
-          img=$(docker create --platform linux/amd64 ghcr.io/${{ github.repository }}:test)
-          docker export $img -o test.tar
-          docker rm $img
+            img=$(docker create --platform linux/amd64 ghcr.io/${{ github.repository }}:test)
+            docker export $img -o test.tar
+            docker rm $img
 
-          mkdir test
-          mkdir latest
-          tar xf test.tar -C test --exclude={var/{log,cache},lib/apk/db/scripts.tar}
-          tar xf latest.tar -C latest --exclude={var/{log,cache},lib/apk/db/scripts.tar}
-          if diff -q -r --no-dereference test latest; then
-            echo "CHECKEQUALS=true" >> "$GITHUB_OUTPUT"
+            mkdir test
+            mkdir latest
+            tar xf test.tar -C test --exclude={var/{log,cache},lib/apk/db/scripts.tar}
+            tar xf latest.tar -C latest --exclude={var/{log,cache},lib/apk/db/scripts.tar}
+            if diff -q -r --no-dereference test latest; then
+              echo "CHECKEQUALS=true" >> "$GITHUB_OUTPUT"
+            fi
           fi
       - name: Build and push
         uses: docker/build-push-action@v5

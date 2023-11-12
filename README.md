@@ -33,7 +33,9 @@ You'll need to mount these volumes:
 
 ## Zeroconf/Bonjour
 
-Service discovery is not built into this image. You'll need, for example, Avahi either on the host or in a separate Docker container. If it's on the host you can create your service definition like this:
+Service discovery is not built into this image, but you can use the [avahi](https://github.com/ensody/avahi) Docker image which also contains an SMB example in the README.
+
+If you already have Avahi installed on the host you can alternatively create your service definition like this:
 
 ```sh
 cat > /etc/avahi/services/smb.service <<EOF
@@ -54,7 +56,7 @@ cat > /etc/avahi/services/smb.service <<EOF
 EOF
 ```
 
-Note that the first service sets up Time Machine discovery. If you don't use macOS you can optionally remove it, but it shouldn't hurt either.
+Note that the first service entry sets up Time Machine discovery for macOS. You can remove that entry if you prefer.
 
 ## Example
 
