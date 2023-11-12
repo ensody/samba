@@ -48,7 +48,7 @@ You can modify and copy-paste this into your shell:
 # Where to store all the data and configs
 SAMBA_ROOT=/var/data/samba
 
-mkdir -p "$SAMBA_ROOT"/{conf,data,db,scripts}
+mkdir -p "$SAMBA_ROOT"/{conf,data,db/private,scripts}
 
 cat > "$SAMBA_ROOT"/scripts/one-time-init.sh <<EOF
 # Add the primary user and group for host-level ownership (we also use force user in smb.conf).
@@ -117,5 +117,5 @@ cat > "$SAMBA_ROOT"/conf/smb.conf <<EOF
    #fruit:time machine max size = 1200G
 EOF
 
-docker run --restart always -d --name samba --net=host -v "$SAMBA_ROOT"/data/:/data/ -v "$SAMBA_ROOT"/db:/var/lib/samba -v "$SAMBA_ROOT"/conf:/etc/samba ghcr.io/ensody/samba
+docker run --restart always -d --name samba --net=host -v "$SAMBA_ROOT"/data/:/data/ -v "$SAMBA_ROOT"/db:/var/lib/samba -v "$SAMBA_ROOT"/conf:/etc/samba -v "$SAMBA_ROOT"/scripts:/scripts ghcr.io/ensody/samba
 ```
