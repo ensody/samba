@@ -67,7 +67,7 @@ SAMBA_ROOT=/var/data/samba
 mkdir -p "$SAMBA_ROOT"/{conf,data,db,scripts}
 
 # Optional script to set up users and passwords
-cat > "$SAMBA_ROOT"/scripts/one-time-init.sh <<EOF
+cat > "$SAMBA_ROOT/scripts/one-time-init.sh" <<EOF
 # Optional: set the "smb" user's password (alternative: docker exec -it samba smbpasswd -a smb)
 #PASSWORD="yourpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s smb
 
@@ -78,7 +78,7 @@ cat > "$SAMBA_ROOT"/scripts/one-time-init.sh <<EOF
 EOF
 
 # Configure shares and additonal settings
-cat > "$SAMBA_ROOT"/conf/extra.conf <<EOF
+cat > "$SAMBA_ROOT/conf/extra.conf" <<EOF
 # This allows everyone in the smb group to write to all shares.
 # Alternatively you can configure this for every share separately.
 write list = @smb
@@ -106,5 +106,5 @@ write list = @smb
    #fruit:time machine max size = 1200G
 EOF
 
-docker run --restart always -d --name samba --net=host -v "$SAMBA_ROOT"/data/:/data/ -v "$SAMBA_ROOT"/db:/var/lib/samba -v "$SAMBA_ROOT"/conf:/conf -v "$SAMBA_ROOT"/scripts:/scripts ghcr.io/ensody/samba:latest
+docker run --restart always -d --name samba --net=host -v "$SAMBA_ROOT/data/:/data/" -v "$SAMBA_ROOT/db:/var/lib/samba" -v "$SAMBA_ROOT/conf:/conf" -v "$SAMBA_ROOT/scripts:/scripts" ghcr.io/ensody/samba:latest
 ```
