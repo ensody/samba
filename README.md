@@ -2,17 +2,23 @@
 
 This is a bare Samba Docker image giving you just the raw Samba server and a simple, but very direct configuration solution.
 
-Note: Most existing Samba Docker images allow creating users and setting smb.conf values via environment variables or via a custom YAML based config system. This Docker image takes a more direct approach. You have to set up your own smb.conf (but you can use the template below) and you have to configure users with a normal shell script.
+Note: Most existing Samba Docker images allow creating users and setting smb.conf values via environment variables or via a custom YAML based config system. This Docker image takes a more direct approach. You have to set up your own smb.conf (or extend the default) and you have to configure users with a normal shell script.
+
+## Defaults
+
+There's a default `smb` user/group with UID/GID 1000. You can either go with the defaults or use the `one-time-init.sh` script to delete/replace that user and add more users.
+
+There's a [default smb.conf](https://github.com/ensody/samba/blob/main/smb.conf). You can add your shares and customizations via an `extra.conf` file or define a custom `smb.conf` to override the defaults.
 
 ## Volumes
 
 You'll need to mount these volumes:
 
-* `/etc/samba`: Should contain your smb.conf.
+* `/conf`: Should contain your `extra.conf` if you want to use the default `smb.conf`. Alternatively, provide the complete `smb.conf` instead.
 * `/var/lib/samba`: Samba server's data
-* `/scripts`: This can contain two scripts to prepare the container. Those scripts will be executed via `-euo pipefail` to ensure that script errors will actually trigger a failure instead of ignoring them.
-  * `/scripts/one-time-init.sh`: will be executed exactly once per container creation and allows e.g. creating Linux users and groups before Samba is launchedl
-  * `/scripts/prepare-sh`: executed every time before Samba is launched.
+* `/scripts`: This can contain shell scripts to prepare the container. Those scripts will be executed via `-euo pipefail` to ensure that script errors will actually trigger a failure instead of ignoring them.
+  * `/scripts/one-time-init.sh`: Will be executed exactly once per container creation and allows e.g. creating Linux users and groups before Samba is launchedl
+  * `/scripts/prepare-sh`: Executed every time before Samba is launched.
 * One or more data volumes for your shares, as referenced in your `smb.conf` (e.g. `/data`).
 
 ## Zeroconf/Bonjour
@@ -48,74 +54,47 @@ You can modify and copy-paste this into your shell:
 # Where to store all the data and configs
 SAMBA_ROOT=/var/data/samba
 
-mkdir -p "$SAMBA_ROOT"/{conf,data,db/private,scripts}
+mkdir -p "$SAMBA_ROOT"/{conf,data,db,scripts}
 
+# Optional script to set up users and passwords
 cat > "$SAMBA_ROOT"/scripts/one-time-init.sh <<EOF
-# Add the primary user and group for host-level ownership (we also use force user in smb.conf).
-# You can optionally also use this as your sole/primary Samba login or add more users.
-groupadd -g 1000 smb
-useradd -u 1000 -g smb smb
+# Optional: set the "smb" user's password (alternative: docker exec -it samba smbpasswd -a smb)
+#PASSWORD="yourpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s smb
 
-# Optional: set the password (or via: docker exec -it samba smbpasswd -a smb)
-PASSWORD="yourpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s smb
+# Optional: Additional more users.
+#groupadd -g 1001 extragroup
+#useradd -u 1001 -g extragroup extrauser
+#PASSWORD="extrauserpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s extrauser
 EOF
 
-cat > "$SAMBA_ROOT"/conf/smb.conf <<EOF
-[global]
-   server string = %h (Samba)
+# Configure shares and additonal settings
+cat > "$SAMBA_ROOT"/conf/extra.conf <<EOF
+# This allows everyone in the smb group to write to all shares.
+# Alternatively you can configure this for every share separately.
+write list = @smb
 
-   log level = 1
-
-   load printers = no
-   printing = bsd
-   printcap name = /dev/null
-   disable spoolss = yes
-
-   obey pam restrictions = yes
-   pam password change = yes
-   map to guest = bad user
-   usershare allow guests = yes
-
-   create mask = 0664
-   force create mode = 0664
-   directory mask = 0775
-   force directory mode = 0775
-
-   write list = @smb
-   # Since we're in a Docker container we want to have proper ownership on the host
-   force user = smb
-   force group = smb
-   veto files = /.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/
-   delete veto files = yes
-
-   vfs objects = catia fruit streams_xattr
-
-   fruit:metadata = stream
-   fruit:nfs_aces = no
-   fruit:delete_empty_adfiles = yes
-   fruit:veto_appledouble = no
-   fruit:wipe_intentionally_left_blank_rfork = yes
-
-# A publicly discoverable share
+# A publicly discoverable share that is only accessible (read and write) by the smb group
 [NAS]
    path = /data/nas
-   writeable = no
+
+# A share with full read-write access for guests
+[Public]
+   path = /data/public
+   writeable = yes
    guest ok = yes
 
-# A hidden share
+# A hidden share (you must explicitly specify the full path when connecting)
 [Hidden]
    path = /data/hidden
    browseable = no
-   writeable = yes
 
 # A share for Time Machine backups (macOS)
 [TimeMachine]
    path = /data/timemachine
-   writeable = yes
    fruit:time machine = yes
    # If you want to limit the maximum backup size:
    #fruit:time machine max size = 1200G
 EOF
 
-docker run --restart always -d --name samba --net=host -v "$SAMBA_ROOT"/data/:/data/ -v "$SAMBA_ROOT"/db:/var/lib/samba -v "$SAMBA_ROOT"/conf:/etc/samba -v "$SAMBA_ROOT"/scripts:/scripts ghcr.io/ensody/samba
+docker run --restart always -d --name samba --net=host -v "$SAMBA_ROOT"/data/:/data/ -v "$SAMBA_ROOT"/db:/var/lib/samba -v "$SAMBA_ROOT"/conf:/conf -v "$SAMBA_ROOT"/scripts:/scripts ghcr.io/ensody/samba
 ```
