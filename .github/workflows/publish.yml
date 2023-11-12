@@ -2,7 +2,7 @@ name: publish
 
 on:
   schedule:
-    - cron: '42 02,10,18 * * *'
+    - cron: '42 02,08,14,20 * * *'
   push:
     branches: ["main"]
   pull_request:
@@ -54,9 +54,8 @@ jobs:
 
           mkdir test
           mkdir latest
-          tar xf test.tar -C test
-          tar xf latest.tar -C latest
-          rm -rf {test,latest}/var/{log,cache}
+          tar xf test.tar -C test --exclude={var/{log,cache},lib/apk/db/scripts.tar}
+          tar xf latest.tar -C latest --exclude={var/{log,cache},lib/apk/db/scripts.tar}
           if diff -q -r --no-dereference test latest; then
             echo "CHECKEQUALS=true" >> "$GITHUB_OUTPUT"
           fi
