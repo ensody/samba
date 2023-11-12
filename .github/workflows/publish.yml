@@ -65,6 +65,6 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || github.event_name != 'pull_request' && steps.checkchanged.outputs.CHECKEQUALS != 'true'
         with:
           context: .
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/riscv64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
           tags: ghcr.io/${{ github.repository }}:latest
