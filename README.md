@@ -38,7 +38,7 @@ cat > /etc/avahi/services/smb.service <<EOF
 EOF
 ```
 
-Note that the first service sets up TimeMachine discovery. If you don't use macOS you can optionally remove it, but it shouldn't hurt either.
+Note that the first service sets up Time Machine discovery. If you don't use macOS you can optionally remove it, but it shouldn't hurt either.
 
 ## Example
 
@@ -108,7 +108,7 @@ cat > "$SAMBA_ROOT"/conf/smb.conf <<EOF
    browseable = no
    writeable = yes
 
-# A share for TimeMachine backups (macOS)
+# A share for Time Machine backups (macOS)
 [TimeMachine]
    path = /data/timemachine
    writeable = yes
