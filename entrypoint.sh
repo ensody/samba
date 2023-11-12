@@ -1,17 +1,17 @@
-#!/usr/bin/env bash
-set -euxo pipefail
+#!/usr/bin/env sh
+set -euo pipefail
 
 initialized=/var/.samba-initialized
 
 if [ ! -e "$initialized" ]; then
   if [ -e /scripts/one-time-init.sh ]; then
-    bash -euo pipefail /scripts/one-time-init.sh
+    sh -euo pipefail /scripts/one-time-init.sh
   fi
   touch "$initialized"
 fi
 
 if [ -e /scripts/prepare.sh ]; then
-  bash -euo pipefail /scripts/prepare.sh
+  sh -euo pipefail /scripts/prepare.sh
 fi
 
 rm -f /etc/samba/smb.conf

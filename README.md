@@ -71,9 +71,9 @@ cat > "$SAMBA_ROOT"/scripts/one-time-init.sh <<EOF
 # Optional: set the "smb" user's password (alternative: docker exec -it samba smbpasswd -a smb)
 #PASSWORD="yourpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s smb
 
-# Optional: Additional more users.
-#groupadd -g 1001 extragroup
-#useradd -u 1001 -g extragroup extrauser
+# Optional: Add more groups and users.
+#addgroup -g 1001 extragroup
+#adduser -D -u 1001 -G extragroup extrauser
 #PASSWORD="extrauserpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s extrauser
 EOF
 
