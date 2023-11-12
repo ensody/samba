@@ -2,7 +2,7 @@ name: publish
 
 on:
   schedule:
-    - cron: '42 02 * * *'
+    - cron: '42 02,10,18 * * *'
   push:
     branches: ["main"]
   pull_request:

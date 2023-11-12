@@ -51,7 +51,7 @@ SAMBA_ROOT=/var/data/samba
 mkdir -p "$SAMBA_ROOT"/{conf,data,db,scripts}
 
 cat > "$SAMBA_ROOT"/scripts/one-time-init.sh <<EOF
-# Add the primary user and group for .
+# Add the primary user and group for host-level ownership (we also use force user in smb.conf).
 # You can optionally also use this as your sole/primary Samba login or add more users.
 groupadd -g 1000 smb
 useradd -u 1000 -g smb smb
