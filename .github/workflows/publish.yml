@@ -54,15 +54,15 @@ jobs:
 
             mkdir test
             mkdir latest
-            tar xf test.tar -C test --exclude={var/{log,cache},lib/apk/db/scripts.tar}
-            tar xf latest.tar -C latest --exclude={var/{log,cache},lib/apk/db/scripts.tar}
+            tar xf test.tar -C test --exclude={etc/shadow,lib/apk/db/scripts.tar,var/{log,cache}}
+            tar xf latest.tar -C latest --exclude={etc/shadow,lib/apk/db/scripts.tar,var/{log,cache}}
             if diff -q -r --no-dereference test latest; then
-              echo "CHECKEQUALS=true" >> "$GITHUB_OUTPUT"
+              echo "CHANGED=false" >> "$GITHUB_OUTPUT"
             fi
           fi
       - name: Build and push
         uses: docker/build-push-action@v5
-        if: github.event_name == 'workflow_dispatch' || github.event_name != 'pull_request' && steps.checkchanged.outputs.CHECKEQUALS != 'true'
+        if: github.event_name == 'workflow_dispatch' || github.event_name != 'pull_request' && steps.checkchanged.outputs.CHANGED != 'false'
         with:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
@@ -70,3 +70,10 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:1
+      - name: Purge old images
+        uses: actions/delete-package-versions@v4
+        with: 
+          package-name: ${{ github.event.repository.name }}
+          package-type: 'container'
+          min-versions-to-keep: 15
+          delete-only-untagged-versions: 'true'
