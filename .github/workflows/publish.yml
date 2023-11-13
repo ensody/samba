@@ -62,7 +62,7 @@ jobs:
           fi
       - name: Build and push
         uses: docker/build-push-action@v5
-        if: github.event_name == 'workflow_dispatch' || github.event_name != 'pull_request' && steps.checkchanged.outputs.CHANGED != 'false'
+        if: github.event_name == 'workflow_dispatch' || (github.event_name != 'pull_request' && steps.checkchanged.outputs.CHANGED != 'false')
         with:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
@@ -72,6 +72,7 @@ jobs:
             ghcr.io/${{ github.repository }}:1
       - name: Purge old images
         uses: actions/delete-package-versions@v4
+        if: github.event_name == 'workflow_dispatch' || (github.event_name != 'pull_request' && steps.checkchanged.outputs.CHANGED != 'false')
         with: 
           package-name: ${{ github.event.repository.name }}
           package-type: 'container'
