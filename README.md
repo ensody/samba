@@ -8,6 +8,8 @@ The CI automatically checks for updates (e.g. security fixes) several times dail
 
 ## Defaults
 
+Zeroconf is active by default. You can turn it off by setting the environment variable `AVAHI_ENABLED=false`. If you want to control Avahi separately you can use the [avahi](https://github.com/ensody/avahi) Docker image which also contains an SMB example in the README.
+
 There's a default `smb` user/group with UID/GID 1000. You can either go with the defaults or use the `one-time-init.sh` script to delete/replace that user. The same script can also be used to add more users.
 
 There's a [default smb.conf](https://github.com/ensody/samba/blob/main/smb.conf). You can add your shares and customizations via an `extra.conf` file or define a custom `smb.conf` to override the defaults.
@@ -31,33 +33,6 @@ You'll need to mount these volumes:
   * `/scripts/prepare-sh`: Executed every time before Samba is launched.
 * One or more data volumes for your shares, as referenced in your `smb.conf` (e.g. `/data`).
 
-## Zeroconf/Bonjour
-
-Service discovery is not built into this image, but you can use the [avahi](https://github.com/ensody/avahi) Docker image which also contains an SMB example in the README.
-
-If you already have Avahi installed on the host you can alternatively create your service definition like this:
-
-```sh
-cat > /etc/avahi/services/smb.service <<EOF
-<?xml version="1.0" standalone='no'?>
-<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
-<service-group>
-  <name replace-wildcards="yes">%h</name>
-  <service>
-    <type>_adisk._tcp</type>
-    <txt-record>sys=waMa=0,adVF=0x100</txt-record>
-    <txt-record>dk0=adVN=TimeMachine,adVF=0x82</txt-record>
-  </service>
-  <service>
-    <type>_smb._tcp</type>
-    <port>445</port>
-  </service>
-</service-group>
-EOF
-```
-
-Note that the first service entry sets up Time Machine discovery for macOS. You can remove that entry if you prefer.
-
 ## Example
 
 You can modify and copy-paste this into your shell:
@@ -69,18 +44,18 @@ SAMBA_ROOT=/var/data/samba
 mkdir -p "$SAMBA_ROOT"/{conf,data,db,scripts}
 
 # Optional script to set up users and passwords
-cat > "$SAMBA_ROOT/scripts/one-time-init.sh" <<EOF
+cat > "$SAMBA_ROOT/scripts/one-time-init.sh" <<'EOF'
 # Optional: set the "smb" user's password (alternative: docker exec -it samba smbpasswd -a smb)
-#PASSWORD="yourpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s smb
+#PASSWORD="yourpassword" echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -a -s smb
 
 # Optional: Add more groups and users.
 #addgroup -g 1001 extragroup
 #adduser -D -u 1001 -G extragroup extrauser
-#PASSWORD="extrauserpassword" echo -e "\$PASSWORD\n\$PASSWORD" | smbpasswd -a -s extrauser
+#PASSWORD="extrauserpassword" echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -a -s extrauser
 EOF
 
 # Configure shares and additonal settings
-cat > "$SAMBA_ROOT/conf/extra.conf" <<EOF
+cat > "$SAMBA_ROOT/conf/extra.conf" <<'EOF'
 # This allows everyone in the smb group to write to all shares.
 # Alternatively you can configure this for every share separately.
 write list = @smb

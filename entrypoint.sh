@@ -21,5 +21,9 @@ else
   ln -s /app/defaults/smb.conf /etc/samba/smb.conf
 fi
 
+if [ "${AVAHI_ENABLED:-}" != "false" ]; then
+  { while true; do avahi-daemon || true; done } &
+fi
+
 nmbd -D
 exec smbd -F --no-process-group </dev/null
