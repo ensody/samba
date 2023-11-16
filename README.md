@@ -8,8 +8,6 @@ The CI automatically checks for updates (e.g. security fixes) several times dail
 
 ## Defaults
 
-Zeroconf is active by default. You can turn it off by setting the environment variable `AVAHI_ENABLED=false`. If you want to control Avahi separately you can use the [avahi](https://github.com/ensody/avahi) Docker image which also contains an SMB example in the README.
-
 There's a default `smb` user/group with UID/GID 1000. You can either go with the defaults or use the `one-time-init.sh` script to delete/replace that user. The same script can also be used to add more users.
 
 There's a [default smb.conf](https://github.com/ensody/samba/blob/main/smb.conf). You can add your shares and customizations via an `extra.conf` file or define a custom `smb.conf` to override the defaults.
@@ -21,6 +19,8 @@ When using these defaults you can simplify your shares to a minimum (more exampl
    path = /data/myshare
    write list = @smb
 ```
+
+Zeroconf is active by default. You can turn it off by setting the environment variable `AVAHI_ENABLED=false`. If you want to control Avahi separately you can use the [avahi](https://github.com/ensody/avahi) Docker image which also contains an SMB example in the README.
 
 ## Volumes
 
