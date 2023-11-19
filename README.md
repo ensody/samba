@@ -4,7 +4,7 @@ This is a bare Samba Docker image giving you just the raw Samba server and a sim
 
 Note: Most existing Samba Docker images allow creating users and setting smb.conf values via environment variables or via a custom YAML based config system. This Docker image takes a more direct approach. You have to set up your own smb.conf (or extend the default) and you have to configure users with a normal shell script.
 
-The CI automatically checks for updates (e.g. security fixes) several times daily and publishes a new image only when necessary. So, this image could be used with podman-auto-update or Watchtower.
+The CI automatically checks for updates (e.g. security fixes) several times per day and publishes a new image only when necessary. So, this image could be used with podman-auto-update or Watchtower.
 
 ## Defaults
 
