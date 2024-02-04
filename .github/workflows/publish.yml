@@ -60,8 +60,8 @@ jobs:
 
             mkdir test
             mkdir latest
-            tar xf test.tar -C test --exclude={etc/shadow,lib/apk/db/scripts.tar,var/{log,cache}}
-            tar xf latest.tar -C latest --exclude={etc/shadow,lib/apk/db/scripts.tar,var/{log,cache}}
+            tar xf test.tar -C test --exclude={etc/shadow{,-},lib/apk/db/scripts.tar,var/{log,cache}}
+            tar xf latest.tar -C latest --exclude={etc/shadow{,-},lib/apk/db/scripts.tar,var/{log,cache}}
             if diff -q -r --no-dereference test latest; then
               echo "CHANGED=false" >> "$GITHUB_OUTPUT"
             fi
