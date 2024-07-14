@@ -25,5 +25,7 @@ if [ "${AVAHI_ENABLED:-}" != "false" ]; then
   { while true; do avahi-daemon || true; done } &
 fi
 
+mkdir -p /var/lib/samba/private
+
 nmbd -D
 exec smbd -F --no-process-group </dev/null
