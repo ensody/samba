@@ -1,5 +1,7 @@
 # Samba Docker image
 
+[Find the full soruce code on github](https://github.com/ensody/samba)
+
 This is a bare Samba Docker image giving you just the raw Samba server and a simple, but very direct configuration solution.
 
 Note: Most existing Samba Docker images allow creating users and setting smb.conf values via environment variables or via a custom YAML based config system. This Docker image takes a more direct approach. You have to set up your own smb.conf (or extend the default) and you have to configure users with a normal shell script.
