@@ -3,6 +3,8 @@ set -euo pipefail
 
 initialized=/var/.samba-initialized
 
+mkdir -p /var/lib/samba/private
+
 if [ ! -e "$initialized" ]; then
   if [ -e /scripts/one-time-init.sh ]; then
     sh -euo pipefail /scripts/one-time-init.sh
@@ -24,8 +26,6 @@ fi
 if [ "${AVAHI_ENABLED:-}" != "false" ]; then
   { while true; do avahi-daemon || true; done } &
 fi
-
-mkdir -p /var/lib/samba/private
 
 nmbd -D
 exec smbd -F --no-process-group </dev/null
