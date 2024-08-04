@@ -29,7 +29,7 @@ You'll need to mount these volumes:
 * `/conf`: Should contain your `extra.conf` if you want to use the default `smb.conf`. Alternatively, provide the complete `smb.conf` instead.
 * `/var/lib/samba`: Samba server's data
 * (optional) `/scripts`: This can contain shell scripts to prepare the container. Those scripts will be executed via `-euo pipefail` to ensure that script errors will actually trigger a failure instead of ignoring them.
-  * `/scripts/one-time-init.sh`: Will be executed exactly once per container creation and allows e.g. creating Linux users and groups before Samba is launchedl
+  * `/scripts/one-time-init.sh`: Will be executed exactly once per container creation and allows e.g. creating Linux users and groups before Samba is launched.
   * `/scripts/prepare.sh`: Executed every time before Samba is launched.
 * One or more data volumes for your shares, as referenced in your `smb.conf` (e.g. `/data`).
 
