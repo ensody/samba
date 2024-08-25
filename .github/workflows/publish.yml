@@ -42,6 +42,7 @@ jobs:
           context: .
           platforms: linux/amd64
           pull: true
+          no-cache: true
           load: true
           tags: ghcr.io/${{ github.repository }}:test
       - name: Check if changed
@@ -76,6 +77,7 @@ jobs:
           provenance: false
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           pull: true
+          no-cache: true
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ github.repository }}:latest
